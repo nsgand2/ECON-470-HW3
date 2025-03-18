@@ -75,6 +75,4 @@ if (!dir.exists(output_dir)) {
 }
 
 write_tsv(final.data, "C:/Users/Nikhita Gandhe/Documents/GitHub/ECON-470-HW3/data/output/TaxBurden_Data.txt", append=FALSE, col_names=TRUE)
-write_rds(final.data, "C:/Users/Nikhita Gandhe/Documents/GitHub/ECON-470-HW3/data/output/TaxBurden_Data.rds")
-
-
+write_rds(final.data, "C:/Users/Nikhita Gandhe/Documents/GitHub/ECON-470-HW3/data/output/TaxBurden_Data.rds") # nolint
