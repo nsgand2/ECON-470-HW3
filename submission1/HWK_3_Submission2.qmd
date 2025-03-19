@@ -25,7 +25,7 @@ Present a bar graph showing the proportion of states with a change in their ciga
 ```{r, echo = FALSE}
 
 ggplot(proportion_changes, aes(x = Year, y = proportion_changed)) +
-  geom_bar(stat = "identity", fill = "#D8BFD8") +
+  geom_bar(stat = "identity", fill = "#7d5bb7") +
   labs(
     title = "Proportion of States with Cigarette Tax Changes (1970–1985)",
     x = "Year",
@@ -49,7 +49,7 @@ ggplot(aggregated_data, aes(x = Year)) +
     x = "Year",
     y = "Value (2012 Dollars)"
   ) + 
-  scale_color_manual(values = c("Tax" = "#D8BFD8", "Cost per pack" = "lightblue")) + 
+  scale_color_manual(values = c("Tax" = "#319a69", "Cost per pack" = "#c4a233")) + 
   theme_minimal()
 
 ```
