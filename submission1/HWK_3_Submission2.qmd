@@ -2,10 +2,10 @@
 title: "Homework 3"
 author: "Nikhita Gandhe"
 date: "03/18/2025"
-
-Please find the link to my GitHub repository here: https://github.com/nsgand2/ECON-470-HW3.git  
 format: pdf
 ---
+
+Please find the link to my GitHub repository here: https://github.com/nsgand2/ECON-470-HW3.git  
 
 ```{r setup, include=FALSE}
 # Load Required Packages
