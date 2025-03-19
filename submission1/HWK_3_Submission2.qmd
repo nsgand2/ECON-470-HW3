@@ -1,0 +1,171 @@
+---
+title: "Homework 3"
+author: "Nikhita Gandhe"
+date: "03/18/2025"
+
+Please find the link to my GitHub repository here: https://github.com/nsgand2/ECON-470-HW3.git  
+format: pdf
+---
+
+```{r setup, include=FALSE}
+# Load Required Packages
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load(tidyverse, ggplot2, dplyr, lubridate, stringr, readxl, data.table, gdata, fixest)
+
+library(readr)
+
+load("C:/Users/Nikhita Gandhe/Documents/GitHub/ECON-470-HW3/submission1/hw_workspace.Rdata")
+
+```
+
+# Question 1
+
+Present a bar graph showing the proportion of states with a change in their cigarette tax in each year from 1970 to 1985.
+
+```{r, echo = FALSE}
+
+ggplot(proportion_changes, aes(x = Year, y = proportion_changed)) +
+  geom_bar(stat = "identity", fill = "#D8BFD8") +
+  labs(
+    title = "Proportion of States with Cigarette Tax Changes (1970–1985)",
+    x = "Year",
+    y = "Proportion of States with Tax Change"
+  ) +
+  theme_minimal()
+
+```
+
+# Question 2
+
+Plot on a single graph the average tax (in 2012 dollars) on cigarettes and the average price of a pack of cigarettes from 1970 to 2018.
+
+```{r, echo = FALSE}
+
+ggplot(aggregated_data, aes(x = Year)) + 
+  geom_line(aes(y = avg_tax_dollar, color = "Tax"), size = 1) + 
+  geom_line(aes(y = avg_cost_per_pack, color = "Cost per pack"), size = 1) + 
+  labs(
+    title = "Average Tax and Price of a Pack of Cigarettes (1970-2018)",
+    x = "Year",
+    y = "Value (2012 Dollars)"
+  ) + 
+  scale_color_manual(values = c("Tax" = "#D8BFD8", "Cost per pack" = "lightblue")) + 
+  theme_minimal()
+
+```
+
+# Question 3
+
+Identify the 5 states with the highest increases in cigarette prices (in dollars) over the time period. Plot the average number of packs sold per capita for those states from 1970 to 2018.
+
+```{r, echo = FALSE}
+
+ggplot(top_states_final, aes(x = Year, y = sales_per_capita, color = state)) +
+  geom_line(size = 1) +
+  labs(
+    title = "Average Number of Packs Sold per Capita for the Top 5 States with the Highest Price Increase (1970-2018)",
+    x = "Year",
+    y = "Packs Sold per Capita",
+    color = "State"
+  ) +
+  theme_minimal()
+
+```
+
+# Question 4
+
+Identify the 5 states with the lowest increases in cigarette prices over the time period. Plot the average number of packs sold per capita for those states from 1970 to 2018.
+
+```{r, echo = FALSE}
+
+ggplot(low_states_final, aes(x = Year, y = sales_per_capita, color = state)) +
+  geom_line(size = 1) +
+  labs(
+    title = "Average Number of Packs Sold per Capita for the Top 5 States with the Highest Price Increase (1970-2018)",
+    x = "Year",
+    y = "Packs Sold per Capita",
+    color = "State"
+  ) +
+  theme_minimal()
+
+```
+
+# Question 5
+
+Compare the trends in sales from the 5 states with the highest price increases to those with the lowest price increases.
+
+The number of cigarettes sold has significantly declined in both the states with the highest and lowest price increases, reflecting broader cultural shifts away from smoking. Missouri and North Dakota contribute to a slight rise in the average cost per pack among the lower-priced states. Currently, both groups see approximately 50 packs sold per capita. However, the lower-priced states exhibit greater variability over time, with North Carolina reaching around 250 packs sold per capita in the mid-1970s.
+
+# Question 6
+
+Focusing only on the time period from 1970 to 1990, regress log sales on log prices to estimate the price elasticity of demand over that period. Interpret your results.
+
+```{r, echo = FALSE}
+
+summary(ols)
+
+```
+
+# Question 7
+
+Again limiting to 1970 to 1990, regress log sales on log prices using the total (federal and state) cigarette tax (in dollars) as an instrument for log prices. Interpret your results and compare your estimates to those without an instrument. Are they different? If so, why?
+
+```{r, echo = FALSE}
+
+summary(step2)
+
+```
+
+With a coefficient of 0.5, cigarette demand appears inelastic, as a 1% increase in price results in only a 0.5% change in quantity demanded. This estimate differs significantly from the OLS elasticity results, likely due to endogeneity issues in the OLS model, which the instrumental variables approach helps address.
+
+# Question 8
+
+Show the first stage and reduced-form results from the instrument.
+
+```{r, echo = FALSE}
+
+summary(step1)
+summary(step2)
+
+```
+
+# Question 9
+
+Repeat questions 1-3 focusing on the period from 1991 to 2015.
+
+*OLS estimates* 
+```{r, echo = FALSE}
+
+summary(ols2)
+
+```
+
+As price increases by 1%, quantity demanded decreases by 66%.
+
+*IV estimates*
+
+```{r, echo = FALSE}
+
+summary(step4)
+
+```
+
+With a coefficient of -0.8, cigarette demand remains inelastic, as a 1% increase in price leads to only a 0.8% decrease in quantity demanded. While this estimate differs from the OLS elasticity results, the contrast is less pronounced compared to previous discrepancies between OLS and instrumental variable estimates.
+
+*2SLS estimates*
+```{r, echo = FALSE}
+
+summary(step3)
+summary(step4)
+
+```
+
+
+# Question 10 
+
+Compare your elasticity estimates from 1970-1990 versus those from 1991-2015. Are they different? If so, why?
+
+
+1970-1990 The results indicate a positive elasticity, meaning that an increase in price corresponds with higher sales—an uncommon pattern in most markets. This anomaly could stem from external factors such as tax hikes, policy changes (e.g., tobacco regulations), or broader structural shifts. One possible explanation is that higher taxes may have made cigarettes appear more exclusive or prestigious, leading to increased consumption despite rising prices.
+ 
+1991-2015 In contrast, this period exhibits the expected negative elasticity, where higher cigarette prices correspond with lower sales. This aligns with standard economic theory and consumer behavior, where increased costs typically discourage consumption. The shift likely reflects stronger public health campaigns, smoking bans, and greater awareness of the risks associated with smoking, reinforcing the expected inverse relationship between price and demand.

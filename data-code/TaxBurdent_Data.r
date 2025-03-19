@@ -51,28 +51,11 @@ cpi.data <- cpi.data %>%
 
 
 # Form final dataset ------------------------------------------------------
-# adjust to 2010 dollars
+# adjust to 2012 dollars
+
 final.data <- final.data %>%
   left_join(cpi.data, by="Year") %>%
-  mutate(price_cpi=cost_per_pack*(218/index))
+  mutate(price_cpi=cost_per_pack*(230/index))
 
-# Ensure the output directory exists
-if (!dir.exists(output_dir)) {
-  dir.create(output_dir, recursive = TRUE)
-}
-
-# Remove existing files to prevent lock issues
-file.remove("C:/Users/Nikhita Gandhe/Documents/GitHub/ECON-470-HW3/data/output/TaxBurden_Data.txt")
-file.remove("C:/Users/Nikhita Gandhe/Documents/GitHub/ECON-470-HW3/data/output/TaxBurden_Data.rds")
-
-# Write new files
-write_tsv(final.data, "C:/Users/Nikhita Gandhe/Documents/GitHub/ECON-470-HW3/data/output/TaxBurden_Data.txt", append=FALSE, col_names=TRUE)
-write_rds(final.data, "C:/Users/Nikhita Gandhe/Documents/GitHub/ECON-470-HW3/data/output/TaxBurden_Data.rds")
-
-output_dir <- "C:/Users/Nikhita Gandhe/Documents/GitHub/ECON-470-HW3/data/output"
-if (!dir.exists(output_dir)) {
-  dir.create(output_dir, recursive = TRUE)
-}
-
-write_tsv(final.data, "C:/Users/Nikhita Gandhe/Documents/GitHub/ECON-470-HW3/data/output/TaxBurden_Data.txt", append=FALSE, col_names=TRUE)
-write_rds(final.data, "C:/Users/Nikhita Gandhe/Documents/GitHub/ECON-470-HW3/data/output/TaxBurden_Data.rds") # nolint
+write_tsv(final.data,"data/output/TaxBurden_Data.txt",append=FALSE,col_names=TRUE)
+write_rds(final.data,"data/output/TaxBurden_Data.rds")
