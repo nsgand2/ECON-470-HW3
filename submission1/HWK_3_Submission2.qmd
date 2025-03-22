@@ -42,7 +42,7 @@ ggplot(proportion_changes, aes(x = Year, y = proportion_changed)) +
 
 Plot on a single graph the average tax (in 2012 dollars) on cigarettes and the average price of a pack of cigarettes from 1970 to 2018.
 
-```{r, echo = FALSE}
+```{r, echo=FALSE, results='asis',message=FALSE,warning=FALSE}
 
 ggplot(aggregated_data, aes(x = Year)) + 
   geom_line(aes(y = avg_tax_dollar, color = "Tax"), size = 1) + 
