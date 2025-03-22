@@ -16,6 +16,9 @@ library(readr)
 
 load("C:/Users/Nikhita Gandhe/Documents/GitHub/ECON-470-HW3/submission1/hw_workspace.Rdata")
 
+tax_burden_final <- readRDS("C:/Users/Nikhita Gandhe/Documents/GitHub/ECON-470-HW3/data/output/TaxBurden_Data.rds")
+
+
 ```
 
 # Question 1
@@ -100,21 +103,99 @@ The number of cigarettes sold has significantly declined in both the states with
 
 Focusing only on the time period from 1970 to 1990, regress log sales on log prices to estimate the price elasticity of demand over that period. Interpret your results.
 
-```{r, echo = FALSE}
+```{r, echo=FALSE, results='asis',message=FALSE,warning=FALSE}
+library(dplyr)
+library(AER)  # For IV regression
+library(modelsummary)
+library(knitr)
 
-summary(ols)
+# Function to format large numbers with commas
+f <- function(x) formatC(x, digits = 0, big.mark = ",", format = "f")
+
+# Filter and create log variables for both time periods
+cig.data_1970_1990 <- tax_burden_final %>%
+  filter(Year >= 1970 & Year <= 1990) %>%
+  mutate(ln_sales = log(sales_per_capita),
+         ln_price_cpi = log(price_cpi),
+         ln_price = log(cost_per_pack),
+         tax_cpi = tax_state * (230 / index),
+         total_tax_cpi = tax_dollar * (230 / index),
+         ln_total_tax = log(total_tax_cpi),                             
+         ln_state_tax = log(tax_cpi))
+
+cig.data_1991_2015 <- tax_burden_final %>%
+  filter(Year >= 1991 & Year <= 2015) %>%
+  mutate(ln_sales = log(sales_per_capita),
+         ln_price_cpi = log(price_cpi),
+         ln_price = log(cost_per_pack),
+         tax_cpi = tax_state * (230 / index),
+         total_tax_cpi = tax_dollar * (230 / index),
+         ln_total_tax = log(total_tax_cpi),                             
+         ln_state_tax = log(tax_cpi))
+
+# OLS regressions for both periods
+ols_1970_1990 <- lm(ln_sales ~ ln_price_cpi, data = cig.data_1970_1990)
+ols_1991_2015 <- lm(ln_sales ~ ln_price_cpi, data = cig.data_1991_2015)
+
+# IV regressions using log tax as an instrument
+iv_1970_1990 <- ivreg(ln_sales ~ ln_price_cpi | ln_state_tax, data = cig.data_1970_1990)
+iv_1991_2015 <- ivreg(ln_sales ~ ln_price_cpi | ln_state_tax, data = cig.data_1991_2015)
+
+# Reduced Form and First Stage Regressions
+reduced_form_1970_1990 <- lm(ln_state_tax ~ ln_price_cpi, data = cig.data_1970_1990)
+reduced_form_1991_2015 <- lm(ln_state_tax ~ ln_price_cpi, data = cig.data_1991_2015)
+
+first_stage_1970_1990 <- lm(ln_price_cpi ~ ln_state_tax, data = cig.data_1970_1990)
+first_stage_1991_2015 <- lm(ln_price_cpi ~ ln_state_tax, data = cig.data_1991_2015)
+
+# Generate the regression table with compact formatting
+models <- modelsummary(
+  list(
+    "Estimates" = list(
+      "OLS" = ols_1970_1990,
+      "IV" = iv_1970_1990,
+      "OLS" = ols_1991_2015,
+      "IV" = iv_1991_2015
+    ),
+    "Reduced Form" = list(
+      "IV" = reduced_form_1970_1990,
+      "IV" = reduced_form_1991_2015
+    ),
+    "First Stage" = list(
+      "IV" = first_stage_1970_1990,
+      "IV" = first_stage_1991_2015
+    )
+  ),
+  shape = "rbind",
+  coef_map = c(
+    "ln_price_cpi" = "Log Price",
+    "ln_state_tax" = "Log Tax"
+  ),
+  gof_map = list(
+    list("raw" = "nobs", "clean" = "N", "fmt" = f),
+    list("raw" = "r.squared", "clean" = "R²", "fmt" = 3)
+  ),
+  output = "data.frame"  # Convert to a data frame for `kable`
+)
+
+# Use knitr::kable to format the table for LaTeX output (Typst/PDF compatible)
+kable(models, format = "simple", booktabs = TRUE, caption = "Elasticity Estimates from OLS and IV")
 
 ```
+
+
 
 # Question 7
 
 Again limiting to 1970 to 1990, regress log sales on log prices using the total (federal and state) cigarette tax (in dollars) as an instrument for log prices. Interpret your results and compare your estimates to those without an instrument. Are they different? If so, why?
+
 
 ```{r, echo = FALSE}
 
 summary(step2)
 
 ```
+
 
 With a coefficient of 0.5, cigarette demand appears inelastic, as a 1% increase in price results in only a 0.5% change in quantity demanded. This estimate differs significantly from the OLS elasticity results, likely due to endogeneity issues in the OLS model, which the instrumental variables approach helps address.
 
